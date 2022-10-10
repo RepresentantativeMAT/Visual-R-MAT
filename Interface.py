@@ -47,7 +47,8 @@ class Interface:
         self.__window = sg.Window('Data Visualizer', layout)
     
     def update_semantics(self, semantics: list):
-        self.__semantic_categories = ['none']+semantics[4:]+['interval temporal']
+
+        self.__semantic_categories = [semantic[0] for semantic in semantics]#+['interval temporal']
         self.__window['displayed_semantic'].update(values=self.__semantic_categories, value=semantics[4])
 
     @property

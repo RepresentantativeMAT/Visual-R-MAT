@@ -20,13 +20,15 @@ class Controller:
             event, values = self.__gui.window.read()
             if event == sg.WIN_CLOSED:
                 running = False
+                print('ok')
             elif event == 'Load Dataset':
                 if values['file_location'] != '':
+                    print('ok')
                     self.__dataset_reader = DatasetReader(values['file_location'])
                     self.__dataset_reader.process_data()
                     self.__gui.update_semantics(self.__dataset_reader.header)
                     print(self.__dataset_reader.processed_data)
-                    #print(self.__dataset_reader.header)
+                    print(self.__dataset_reader.header)
             elif event == 'Load Representative Trajectory':
                 if values['file_location'] != '':
                     self.__rep_traj_reader = RepresentativeTrajectoryReader(values['file_location'])
