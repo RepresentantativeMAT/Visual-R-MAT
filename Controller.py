@@ -1,10 +1,8 @@
 
 
 from Readers.DatasetReader import DatasetReader
-from DatasetGraph import DatasetGraph
-from RepresentativeTrajectoryGraph import RepresentativeTrajectoryGraph
 from Readers.RepresentativeTrajectoryReader import RepresentativeTrajectoryReader
-from ComparisionGraph import ComparisionGraph
+from Graphics.ComparisionGraph import ComparisionGraph
 from Interface import Interface
 import PySimpleGUI as sg
 
@@ -20,15 +18,13 @@ class Controller:
             event, values = self.__gui.window.read()
             if event == sg.WIN_CLOSED:
                 running = False
-                print('ok')
             elif event == 'Load Dataset':
                 if values['file_location'] != '':
-                    print('ok')
                     self.__dataset_reader = DatasetReader(values['file_location'])
                     self.__dataset_reader.process_data()
                     self.__gui.update_semantics(self.__dataset_reader.header)
-                    print(self.__dataset_reader.processed_data)
-                    print(self.__dataset_reader.header)
+                    #print(self.__dataset_reader.processed_data)
+                    #print(self.__dataset_reader.header)
             elif event == 'Load Representative Trajectory':
                 if values['file_location'] != '':
                     self.__rep_traj_reader = RepresentativeTrajectoryReader(values['file_location'])
@@ -54,13 +50,18 @@ class Controller:
                                             dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
             trajectories.pop()
         elif values['plot_dataset'] and not values['plot_rep_traj']:
-            self.__graph = DatasetGraph(self.__dataset_reader.processed_data, values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
-                                      line_style=values['dataset_line_style'], marker_style=values['dataset_marker_style'], 
-                                      plot_points=values['plot_dataset_points'], plot_text=values['plot_dataset_text'])
+            self.__graph = ComparisionGraph(self.__dataset_reader.processed_data, values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
+                                            values['rep_traj_color'], values['rep_traj_color'], 
+                                            dataset_line_style=values['dataset_line_style'], rep_traj_line_style=values['rep_traj_line_style'],
+                                            dataset_marker_style=values['dataset_marker_style'], rep_traj_marker_style=values['rep_traj_marker_style'],
+                                            dataset_plot_points=values['plot_dataset_points'], rep_traj_plot_points=values['plot_rep_traj_points'],
+                                            dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
         elif values['plot_rep_traj'] and not values['plot_dataset']:
-            self.__graph = RepresentativeTrajectoryGraph(self.__rep_traj_reader.processed_data, values['displayed_semantic'], values['rep_traj_color'], values['rep_traj_color'], 
-                                      line_style=values['rep_traj_line_style'], marker_style=values['rep_traj_marker_style'], 
-                                      plot_points=values['plot_rep_traj_points'], plot_text=values['plot_rep_traj_text'])
-
+            self.__graph = ComparisionGraph([self.__rep_traj_reader.processed_data], values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
+                                            values['rep_traj_color'], values['rep_traj_color'], 
+                                            dataset_line_style=values['dataset_line_style'], rep_traj_line_style=values['rep_traj_line_style'],
+                                            dataset_marker_style=values['dataset_marker_style'], rep_traj_marker_style=values['rep_traj_marker_style'],
+                                            dataset_plot_points=values['plot_dataset_points'], rep_traj_plot_points=values['plot_rep_traj_points'],
+                                            dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
 
 #    print(f"{event} : {values}")
