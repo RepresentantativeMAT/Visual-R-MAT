@@ -42,3 +42,8 @@ class Trajectory:
     def add_point(self, point: Point):
         self.__points.append(point)
         self.__num_points += 1
+    
+    def is_empty(self):
+        if len(self.__points) == 0:
+            return True
+        return False

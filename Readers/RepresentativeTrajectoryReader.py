@@ -41,9 +41,9 @@ class RepresentativeTrajectoryReader(CSVReader):
                 text = ' '.join(text).replace(', ', ' / ')
                 semantics[row.split(' ')[2][0:-1].lower()] = text.split(' / ')[0]
             elif row[0:12] == 'Local mapped':
-                print(info)
-                print(semantics)
-                print()
+                #print(info)
+                #print(semantics)
+                #print()
                 rep_traj.add_point(Point(round(float(pos[0]), 3), 
                                          round(float(pos[1]), 3), 
                                          time, semantics))

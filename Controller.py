@@ -3,6 +3,7 @@
 from Readers.DatasetReader import DatasetReader
 from Readers.RepresentativeTrajectoryReader import RepresentativeTrajectoryReader
 from Graphics.ComparisionGraph import ComparisionGraph
+from Filters.Filter import Filter
 from Interface import Interface
 import PySimpleGUI as sg
 
@@ -11,6 +12,7 @@ class Controller:
         self.__gui = Interface()
         self.__dataset_reader = None
         self.__rep_traj_reader = None
+        self.__filters : list[Filter] = []
 
     def run(self):
         running = True

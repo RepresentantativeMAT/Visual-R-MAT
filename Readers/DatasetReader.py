@@ -22,7 +22,7 @@ class DatasetReader(CSVReader):
     def set_csv_data(self, csv_path):
         self.__csv_file = open(csv_path, "r")
         self.__csv_data = csv.reader(self.__csv_file, delimiter=';')
-        print('ok')
+        #print('ok')
     
     def process_data(self):
         self.__processed_data = []
@@ -31,12 +31,12 @@ class DatasetReader(CSVReader):
         for row in self.__csv_data:
             if row[0] != current_traj.id:
                 self.__processed_data.append(current_traj)
-                semantics = {}
                 current_traj = Trajectory(row[0])
+            semantics = {}
             pos = row[1].split(' ')
             time = row[2]
-            for key, value in zip(self.__header[3:], row[3:]):
-                semantics[key] = value
+            for key, value in zip(self.__header[4:], row[3:]):
+                semantics[key[0]] = value
             current_traj.add_point(Point(round(float(pos[0]), 3),
                                          round(float(pos[1]), 3), 
                                          time, semantics))
@@ -44,7 +44,7 @@ class DatasetReader(CSVReader):
     
     def semantic_type(self, value: str):
         try:
-            print(float(value))
+            float(value)
             return "numerical"
         except:
             return "categorical"
@@ -59,5 +59,4 @@ class DatasetReader(CSVReader):
         
         self.__csv_file.seek(0)
         next(self.__csv_data)
-
         return header
