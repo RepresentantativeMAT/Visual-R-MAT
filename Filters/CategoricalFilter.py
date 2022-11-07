@@ -14,9 +14,11 @@ class CategoricalFilter(Filter):
         return self.__filtered_trajectories
 
     def filter_trajectories(self, trajectories, key, arguments):
+        print(arguments)
         for trajectory in trajectories:
             new_traj = Trajectory(trajectory.id)
             for point in trajectory.points:
+                print(point.semantics[key] in arguments)
                 if (point.semantics[key] in arguments):
                     new_traj.add_point(point)
             if not(new_traj.is_empty()):

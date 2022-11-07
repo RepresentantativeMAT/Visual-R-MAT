@@ -7,6 +7,7 @@ import adjustText
 class GraphBuilder(ABC):
     def __init__(self):
         self.__fig, self.__ax = plt.subplots()
+        plt.plot()
 
     def config_graph(self, axis_limits : list, n_traj, xlabel = "Latitude", ylabel = "Longitude", ):
         rangex = axis_limits[1] - axis_limits[0]
@@ -16,13 +17,18 @@ class GraphBuilder(ABC):
         axis_limits[2] -= rangey*0.1
         axis_limits[3] += rangey*0.1
         self.__ax.axis(axis_limits)
-        self.__ax.legend(loc='lower center', ncol = n_traj, bbox_to_anchor = (0.5, 1))
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        self.__ax.legend(by_label.values(), by_label.keys(), loc='lower center', ncol = n_traj, bbox_to_anchor = (0.5, 1))
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
 
     def plot_line(self, trajectory, line_color, line_width = 1, line_style = '-'):
         pos = trajectory.positions()
-        lines = self.__ax.plot(pos[0], pos[1], label = trajectory.id)
+        if trajectory.id == 'Representative Trajectory':
+            lines = self.__ax.plot(pos[0], pos[1], label = trajectory.id)
+        else:
+            lines = self.__ax.plot(pos[0], pos[1], label = 'Dataset')
         plt.setp(lines, color = line_color, linewidth = line_width, linestyle = line_style)
 
     def plot_points(self, trajectory, point_color, marker_style, marker_size):
@@ -57,3 +63,12 @@ class GraphBuilder(ABC):
     
     def save_plot(self, filename):
         plt.savefig(filename, dpi=400, bbox_inches='tight')
+    
+    def reset(self):
+        self.__fig.clf()
+        self.__ax.cla()
+        self.__fig, self.__ax = plt.subplots()
+
+    @property
+    def fig(self):
+        return self.__fig

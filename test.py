@@ -41,10 +41,13 @@ rep_traj_reader.process_data()
 # plot.grid()
 #plot.show()
 
-trajectories = NumericalFilter()
-trajectories.filter_trajectories(dataset_reader.processed_data, 'rating', (5,10))
+#trajectories = NumericalFilter()
+#trajectories.filter_trajectories(dataset_reader.processed_data, 'rating', (5,10))
 
-total_graph = ComparisionGraph(trajectories.filtered_trajectories, 'rating', 'red', 'red', 'blue', 'blue', rep_traj_plot_points=True, dataset_plot_text=True)
+trajectories = CategoricalFilter()
+trajectories.filter_trajectories(dataset_reader.processed_data, 'weather', ('Rain, Fog'))
+
+total_graph = ComparisionGraph(trajectories.filtered_trajectories, 'weather', 'red', 'red', 'blue', 'blue', rep_traj_plot_points=True, dataset_plot_text=True)
 total_graph.show_plot()
 
 # for i, trajectory in enumerate(trajectories):
