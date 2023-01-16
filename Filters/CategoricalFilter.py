@@ -8,18 +8,18 @@ class CategoricalFilter(Filter):
     def __init__(self):
         super().__init__()
         self.__filtered_trajectories = []
-    
     @property
     def filtered_trajectories(self):
         return self.__filtered_trajectories
 
-    def filter_trajectories(self, trajectories, key, arguments):
-        print(arguments)
+    def filter_trajectories(self, filter_name, trajectories, key, arguments):
+        #print(arguments)
         for trajectory in trajectories:
             new_traj = Trajectory(trajectory.id)
             for point in trajectory.points:
-                print(point.semantics[key] in arguments)
-                if (point.semantics[key] in arguments):
+                #print(point.semantics[key] in arguments)
+                if (point.semantics[key].split(' ')[0] in arguments):
                     new_traj.add_point(point)
             if not(new_traj.is_empty()):
+                new_traj.id = filter_name
                 self.filtered_trajectories.append(new_traj)

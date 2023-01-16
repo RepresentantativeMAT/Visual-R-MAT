@@ -44,11 +44,24 @@ rep_traj_reader.process_data()
 #trajectories = NumericalFilter()
 #trajectories.filter_trajectories(dataset_reader.processed_data, 'rating', (5,10))
 
-trajectories = CategoricalFilter()
-trajectories.filter_trajectories(dataset_reader.processed_data, 'weather', ('Rain, Fog'))
+traj_filter = CategoricalFilter()
+traj_filter.filter_trajectories('Dataset Filter', dataset_reader.processed_data, 'day', ('Monday'))
 
-total_graph = ComparisionGraph(trajectories.filtered_trajectories, 'weather', 'red', 'red', 'blue', 'blue', rep_traj_plot_points=True, dataset_plot_text=True)
-total_graph.show_plot()
+rep_traj_filter = CategoricalFilter()
+rep_traj_filter.filter_trajectories('Representative Trajectory Filter', [rep_traj_reader.processed_data], 'day', ('Monday'))
+
+total_graph = ComparisionGraph()
+total_graph.plot_trajectories(dataset_reader.processed_data, 'day', 'red', 'red', 'red', 'red', 
+                              rep_traj_plot_points=True, dataset_line_style='--')
+total_graph.plot_trajectories([rep_traj_reader.processed_data], 'day', 'orange', 'orange', 'orange', 'orange', 
+                              rep_traj_plot_points=False, rep_traj_line_style='--')
+if traj_filter.filtered_trajectories:
+    total_graph.plot_trajectories(traj_filter.filtered_trajectories, 'day', 'green', 'green', 'green', 'green', 
+                                  dataset_plot_points=True)
+if rep_traj_filter.filtered_trajectories:
+    total_graph.plot_trajectories(rep_traj_filter.filtered_trajectories, 'day', 'blue', 'blue', 'blue', 'blue', 
+                                  dataset_plot_points=True)
+total_graph.save_plot("graph_filter.png")
 
 # for i, trajectory in enumerate(trajectories):
 #     if i == len(trajectories)-1:

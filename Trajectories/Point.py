@@ -1,11 +1,12 @@
 
 
+# Represents a point from a trajectory
 class Point:
     def __init__(self, x, y, time, semantics : dict):
-        self.__x = x
-        self.__y = y
-        self.__time = time
-        self.__semantics = semantics
+        self.__x = x                    # X Position
+        self.__y = y                    # Y Position
+        self.__time = time              # Time mark
+        self.__semantics = semantics    # Semantic attributes
     
     @property
     def x(self):

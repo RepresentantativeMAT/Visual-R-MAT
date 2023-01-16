@@ -35,12 +35,16 @@ class MainInterface:
                       [sg.Column(filter_stack, scrollable=True, vertical_scroll_only=True, justification='r')]]
 
         self.__figure_canvas_agg = None
-        graph_area = [[sg.Canvas(key='graphCanvas')],[sg.Button('Plot', size=(10,1), key="plot_graph")]]
-        line2 = [sg.Column(filter_tab, vertical_alignment='top'), sg.Column(graph_area, element_justification='r')]
+        graph_area = [[sg.Canvas(key='graphCanvas')],
+                      [sg.Button('Reset', size=(10,1), key='reset_graph'),
+                       sg.Button('Plot', size=(10,1), key="plot_graph"), 
+                       sg.Input(key='save_graph', visible=False, enable_events=True), 
+                       sg.SaveAs('Save', size=(10,1), file_types=(('JPEG', '.jpeg'), ('PNG', '.png'), ('PDF', '.pdf')))]]
+        line2 = [sg.Column(filter_tab, vertical_alignment='top', expand_y=True), sg.Column(graph_area, element_justification='r')]
 
         layout = [line1, line2]
 
-        self.__window = sg.Window('Data Visualizer', layout, resizable=True)
+        self.__window = sg.Window('Data Visualizer', layout, resizable=True, finalize=True)
     
     def update_semantics(self, semantics: list):
 
