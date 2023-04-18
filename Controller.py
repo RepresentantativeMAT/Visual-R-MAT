@@ -1,73 +1,90 @@
 
 
-from Trajectories.TrajectoryBank import TrajectoryBank
-from Readers.DatasetReader import DatasetReader
-from Readers.RepresentativeTrajectoryReader import RepresentativeTrajectoryReader
-from Graphics.ComparisionGraph import ComparisionGraph
-from Filters.Filter import Filter
-from MainInterface import MainInterface
 import PySimpleGUI as sg
+from tkinter import filedialog
+from Gui import Gui
+from TrajectoryBank import TrajectoryBank
+from Graph import Graph
 
 class Controller:
     def __init__(self) -> None:
-        self.__gui = MainInterface()
-        self.__dataset_reader = None
-        self.__rep_traj_reader = None
-        self.__traj_bank = TrajectoryBank()
-        self.__filters : list[Filter] = []
-        self.__graph = ComparisionGraph()
-        self.__gui.draw_figure(self.__graph.fig)
+        self.__trajectory_bank = TrajectoryBank()
+        self.__graph = Graph()
+        self.__interface = Gui(self.__graph.fig)
 
     def run(self):
         running = True
         while running:
-            event, values = self.__gui.window.read()
+            event, values = self.__interface.window.read()
+
             if event == sg.WIN_CLOSED:
                 running = False
-            elif event == 'dataset_path':
-                if values['dataset_path'] != '':
-                    self.__dataset_reader = DatasetReader(values['dataset_path'])
-                    self.__dataset_reader.process_data(self.__traj_bank)
-                    self.__gui.update_semantics(self.__dataset_reader.header)
-                    #print(self.__dataset_reader.processed_data)
-                    #print(self.__dataset_reader.header)
-            elif event == 'r-mat_path':
-                if values['r-mat_path'] != '':
-                    self.__rep_traj_reader = RepresentativeTrajectoryReader(values['r-mat_path'])
-                    self.__rep_traj_reader.process_data(self.__traj_bank)
-                    #print(self.__rep_traj_reader.processed_data)
-            elif event == 'reset_graph':
-                self.__graph.reset()
-                self.__gui.draw_figure(self.__graph.fig)
-            elif event == 'plot_graph':
-                if values['plot_dataset'] or values['plot_rep_traj']:
-                    self.plot_graph(values)
-                    self.__gui.draw_figure(self.__graph.fig)
-            elif event == 'save_graph':
-                self.__graph.save_plot(values['save_graph'])
-        quit()
+            elif event == "load":
+                self.load_file_loop()
+            elif event == "trajectories":
+                self.trajectory_list_loop()
+            elif event == "reset":
+                self.reset(values)
+            elif event == "plot":
+                self.plot(values)
+                #self.__graph.show_plot()
+                self.__interface.draw_graph(self.__graph.fig)
+            elif event == "save":
+                filename = filedialog.asksaveasfilename()
+                self.__interface.save_graph(filename)
+        self.__interface.window.close()
 
-    def plot_graph(self, values):
-        if values['plot_dataset'] and values['plot_rep_traj']:
-            self.__graph.plot_trajectories(self.__traj_bank, values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
-                                            values['rep_traj_color'], values['rep_traj_color'], 
-                                            dataset_line_style=values['dataset_line_style'], rep_traj_line_style=values['rep_traj_line_style'],
-                                            dataset_marker_style=values['dataset_marker_style'], rep_traj_marker_style=values['rep_traj_marker_style'],
-                                            dataset_plot_points=values['plot_dataset_points'], rep_traj_plot_points=values['plot_rep_traj_points'],
-                                            dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
-        elif values['plot_dataset'] and not values['plot_rep_traj']:
-            self.__graph.plot_trajectories(self.__traj_bank, values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
-                                            values['rep_traj_color'], values['rep_traj_color'], 
-                                            dataset_line_style=values['dataset_line_style'], rep_traj_line_style=values['rep_traj_line_style'],
-                                            dataset_marker_style=values['dataset_marker_style'], rep_traj_marker_style=values['rep_traj_marker_style'],
-                                            dataset_plot_points=values['plot_dataset_points'], rep_traj_plot_points=values['plot_rep_traj_points'],
-                                            dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
-        elif values['plot_rep_traj'] and not values['plot_dataset']:
-            self.__graph.plot_trajectories(self.__traj_bank, values['displayed_semantic'], values['dataset_color'], values['dataset_color'], 
-                                            values['rep_traj_color'], values['rep_traj_color'], 
-                                            dataset_line_style=values['dataset_line_style'], rep_traj_line_style=values['rep_traj_line_style'],
-                                            dataset_marker_style=values['dataset_marker_style'], rep_traj_marker_style=values['rep_traj_marker_style'],
-                                            dataset_plot_points=values['plot_dataset_points'], rep_traj_plot_points=values['plot_rep_traj_points'],
-                                            dataset_plot_text=values['plot_dataset_text'], rep_traj_plot_text=values['plot_rep_traj_text'])
+    def load_file_loop(self):
+        self.__interface.load_file_window()
+        while True:
+            event, values = self.__interface.load_window.window.read()
+            if event == sg.WIN_CLOSED:
+                break
+            if event == "load":
+                if values["file_path"] == '':
+                    self.error_message("No file path!")
+                else:
+                    file_type = "dataset"
+                    if values["rep_traj"]:
+                        file_type = "rep_traj"
+                    if self.__trajectory_bank.add_from_file(values["file_path"], file_type=file_type):
+                        semantics = [semantic[0] for semantic in self.__trajectory_bank.header]
+                        self.__interface.update_semantics(semantics)
+                        self.__interface.window['grid_size'].update(self.__trajectory_bank.settings.get('CellSize', 1))
+                        break
+        self.__interface.load_window.window.close()
 
-#    print(f"{event} : {values}")
+    def trajectory_list_loop(self):
+        self.__interface.load_trajectory_window(self.__trajectory_bank.trajectories)
+        while True:
+            event, values = self.__interface.trajectory_window.window.read()
+            if event == sg.WIN_CLOSED:
+                break
+            if event.split('-')[0] == 'delete':
+                id = event.split('-')[1]
+                self.__interface.trajectory_window.remove_traj(id)
+                self.__trajectory_bank.remove_traj(id)
+
+    def plot(self, values):
+        if values["auto-reset"]:
+            self.reset(values)
+        trajectories = self.__trajectory_bank.trajectories
+        for trajectory in trajectories:
+            pos = trajectory.positions()
+            if values[trajectory.type]:
+                if values[trajectory.type+'_line']:
+                    self.__graph.plot_lines(pos[0], pos[1], trajectory.type, values[trajectory.type+'_color'], 
+                                            values[trajectory.type+'_line_style'])
+                if values[trajectory.type+'_point']:
+                    self.__graph.plot_points(pos[0], pos[1], trajectory.type, values[trajectory.type+'_color'], 
+                                            values[trajectory.type+'_point_style'])
+        
+                self.__graph.settings(values['grid'], float(values['grid_size']), self.__trajectory_bank.num_traj)
+
+    def reset(self, values):
+                self.__graph.reset(float(values['grid_size']), values['grid'])
+                self.__interface.draw_graph(self.__graph.fig)
+
+    def error_message(self, text):
+        sg.PopupOK(text, title="Error", modal=True)
+        
