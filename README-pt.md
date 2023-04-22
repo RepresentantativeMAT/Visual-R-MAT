@@ -1,4 +1,4 @@
-# Visual-R-MAT: Representação Visual de Múltiplas Trajetórias de Aspecto
+# Visual-R-MAT: Representação Visual de Trajetórias de Múltiplos Aspectos
 ==========================================================================
 
 Visão Geral
