@@ -48,9 +48,6 @@ class Gui:
     
     def draw_graph(self, fig):
         self.__graph_widget.draw_graph(self.__window, fig)
-    
-    def save_graph(self, filename):
-        self.__graph_widget.save(filename)
 
     @property
     def window(self):

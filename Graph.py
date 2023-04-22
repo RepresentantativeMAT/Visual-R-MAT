@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import adjustText
 
 
 class Graph:
@@ -18,8 +19,27 @@ class Graph:
     def plot_points(self, x, y, name, marker_color, marker_style = 'o', marker_size = 10):
         self.__points = self.__ax.scatter(x, y, label=name, color=marker_color, marker=marker_style, s=marker_size)
     
-    def plot_text(self):
-        pass
+    def plot_text(self, trajectory, key, color):
+        for point in trajectory.points:
+            if key == 'tid':
+                text = trajectory.id
+            elif key == 'lat':
+                text = point.x
+            elif key == 'lon':
+                text = point.y
+            elif key == 'date_time':
+                text = point.time
+            else:
+                text = point.semantics[key]
+            
+            text = str(text).split(' ')[0]
+            
+            self.__texts.append(self.__ax.text(point.x, point.y, text, fontsize=6, c=color))
+
+    def adjust_text(self):
+        x = adjustText.adjust_text(self.__texts, autoalign='y', only_move={'points':'y', 'text':'y'}, 
+                            force_points=0.15)#, arrowprops=dict(arrowstyle="->", color='black', lw=0.5))
+        #print(f"{x} interation needed")
 
     def show_plot(self):
         plt.show()
@@ -47,6 +67,7 @@ class Graph:
 
     def reset(self, grid_size : float, grid: bool):
         self.__fig, self.__ax = plt.subplots()
+        self.__texts.clear()
         if grid: self.__ax.grid(True)
         else: self.__ax.grid(False)
         

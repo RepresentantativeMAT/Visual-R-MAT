@@ -30,8 +30,8 @@ class Controller:
                 #self.__graph.show_plot()
                 self.__interface.draw_graph(self.__graph.fig)
             elif event == "save":
-                filename = filedialog.asksaveasfilename()
-                self.__interface.save_graph(filename)
+                filename = filedialog.asksaveasfilename(filetypes=[('PNG', '*.png')])
+                self.__graph.save_plot(filename)
         self.__interface.window.close()
 
     def load_file_loop(self):
@@ -70,16 +70,18 @@ class Controller:
             self.reset(values)
         trajectories = self.__trajectory_bank.trajectories
         for trajectory in trajectories:
-            pos = trajectory.positions()
             if values[trajectory.type]:
+                pos = trajectory.positions()
                 if values[trajectory.type+'_line']:
                     self.__graph.plot_lines(pos[0], pos[1], trajectory.type, values[trajectory.type+'_color'], 
                                             values[trajectory.type+'_line_style'])
                 if values[trajectory.type+'_point']:
                     self.__graph.plot_points(pos[0], pos[1], trajectory.type, values[trajectory.type+'_color'], 
                                             values[trajectory.type+'_point_style'])
-        
-                self.__graph.settings(values['grid'], float(values['grid_size']), self.__trajectory_bank.num_traj)
+                if values[trajectory.type+'_text']:
+                    self.__graph.plot_text(trajectory, values[trajectory.type+'_semantic'], values[trajectory.type+'_color'])
+        self.__graph.adjust_text()        
+        self.__graph.settings(values['grid'], float(values['grid_size']), self.__trajectory_bank.num_traj)
 
     def reset(self, values):
                 self.__graph.reset(float(values['grid_size']), values['grid'])
