@@ -21,18 +21,19 @@ def isfloat(n):
 
 class TrajectoryBank:
     def __init__(self) -> None:
-        self.__trajectories : dict[str][Trajectory] = {}
+        self.__trajectories : dict[str][Trajectory] = {}    # Stores trajectories
         self.__num_traj : int = 0
-        self.__header : list[tuple]
-        self.__settings : dict[str][float] = {}
+        self.__header : list[tuple]                         # Semantic categories
+        self.__settings : dict[str][float] = {}             # MAT-SG output settings
         
-    
+    # See type of file and calls corret function
     def add_from_file(self, file_path : str, file_type: str):
         if file_type == 'dataset':
             return self.__read_dataset_file(file_path, file_type)
         else:
             return self.__read_rep_traj_file(file_path, file_type)
-        
+
+    # Reads dataset type file (MAT-SG input). True if file is correct format
     def __read_dataset_file(self, file_path : str, file_type: str):
         csv_file = open(file_path, "r")                           # Open file
         csv_data = csv.reader(csv_file, delimiter=';')    # Creates reader
@@ -75,11 +76,11 @@ class TrajectoryBank:
         csv_file.close()
         return True
 
+    # Reads representative trajectory type file (MAT-SG output). True if file is correct format
     def __read_rep_traj_file(self, file_path : str, file_type: str):
         csv_data = open(file_path, "r").readlines() # Open file and saves lines
         if csv_data[0][0:3] == "tid": return False
         
-
         rep_traj = Trajectory('Representative Trajectory', file_type)
         semantics = {}
         for row in csv_data: # For each line in the file
@@ -98,7 +99,7 @@ class TrajectoryBank:
                 text = ' '.join(text).replace(', ', ' / ')
                 semantics[row.split(' ')[2][0:-1].lower()] = text.split(' / ')[0]
             elif row[0:12] == 'Local mapped':
-                # Adiciona ponto a trajetória representativa
+                # Adds point to representative trajectory
                 rep_traj.add_point(Point(round(float(pos[0]), 3), 
                                          round(float(pos[1]), 3), 
                                          time, semantics))
