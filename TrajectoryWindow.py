@@ -12,6 +12,7 @@ class TrajectoryWindow(AbstractWindow):
             self.__trajectory_widgets[trajectory.id] = TrajectoryWidget(trajectory)
 
         self.__layout = [[sg.Column(
+            [[sg.Button("Delete all", key="delete_all")]] + 
             [[traj_w.layout] for traj_w in self.__trajectory_widgets.values()],
             size=(400,300), scrollable=True, vertical_scroll_only= True, expand_x=True, expand_y=True
         )]]
@@ -19,7 +20,7 @@ class TrajectoryWindow(AbstractWindow):
 
     def remove_traj(self, id):
         self.__trajectory_widgets.pop(id)
-        self.__window[id].update(visible=False)
+        self.__window[id].hide_row()
 
     @property
     def window(self):

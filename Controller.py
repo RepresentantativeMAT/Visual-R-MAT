@@ -75,6 +75,10 @@ class Controller:
                 id = event.split('-')[1]
                 self.__interface.trajectory_window.remove_traj(id)
                 self.__trajectory_bank.remove_traj(id)
+            if event == 'delete_all':
+                for traj in self.__trajectory_bank.trajectories:
+                    self.__interface.trajectory_window.remove_traj(traj.id)
+                self.__trajectory_bank.reset()
 
     # Plot graph
     def plot(self, values):

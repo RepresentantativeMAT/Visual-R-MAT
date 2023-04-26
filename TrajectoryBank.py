@@ -36,7 +36,7 @@ class TrajectoryBank:
     # Reads dataset type file (MAT-SG input). True if file is correct format
     def __read_dataset_file(self, file_path : str, file_type: str):
         csv_file = open(file_path, "r")                           # Open file
-        csv_data = csv.reader(csv_file, delimiter=';')    # Creates reader
+        csv_data = csv.reader(csv_file, delimiter=',')    # Creates reader
 
         attributes = next(csv_data)  # Header categories
         if attributes[0] == 'rt': return False
@@ -80,7 +80,7 @@ class TrajectoryBank:
     def __read_rep_traj_file(self, file_path : str, file_type: str):
         csv_data = open(file_path, "r").readlines() # Open file and saves lines
         if csv_data[0][0:3] == "tid": return False
-        
+        time = ''
         rep_traj = Trajectory('Representative Trajectory', file_type)
         semantics = {}
         for row in csv_data: # For each line in the file
@@ -126,6 +126,10 @@ class TrajectoryBank:
             self.__trajectories.pop(id)
             self.__num_traj -= 1
     
+    def reset(self):
+        self.__trajectories.clear()
+        self.__num_traj = 0
+
     @property
     def trajectories(self):
         return self.__trajectories.values()
