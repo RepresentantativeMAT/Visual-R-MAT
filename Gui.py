@@ -42,7 +42,7 @@ class Gui:
         self.__layout = [sg.Column([self.__row1, self.__row2])]
 
         # Create window
-        self.__window = sg.Window("Visual R-MAT", layout=[self.__layout], finalize=True, resizable=True)
+        self.__window = sg.Window("Visual R-MAT", layout=[self.__layout], finalize=True, resizable=True, icon="graph.ico")
 
         # Draw graph on gui
         self.__graph_widget.draw_graph(self.__window, fig)
