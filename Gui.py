@@ -17,7 +17,7 @@ class Gui:
         
         # Graph options widgets
         self.__opt_box1 = OptionBox('dataset')
-        self.__opt_box2 = OptionBox('rep_traj')
+        self.__opt_box2 = OptionBox('rep_traj', default_color='blue')
 
         # Gui layout
 
