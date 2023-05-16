@@ -106,6 +106,9 @@ class Controller:
                 if values[trajectory.type+'_text']:
                     self.__graph.plot_text(trajectory, values[trajectory.type+'_semantic'], values[trajectory.type+'_color'])
         
+        # When hovering a representative point, shows an info note
+        #self.__graph.plot_annotation()
+
         # Adjust text if it exists
         self.__graph.adjust_text()  
         

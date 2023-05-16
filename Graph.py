@@ -15,6 +15,15 @@ class Graph:
         self.__lines = []                       # Keep lines stored (No use)
         self.__points = None                     # Keep points stored (No use)
         self.__texts = []                       # Keep texts stores (Used for adjusting text)
+        self.__annotation = self.__ax.annotate(
+            text='',
+            xy=(0,0),
+            xytext=(15,15),
+            textcoords='offset points',
+            bbox={'boxstyle': 'round', 'fc': 'w'},
+            arrowprops={'arrowstyle': '->'}
+        )
+        self.__annotation.set_visible(False)
 
     # Receives points coordinates in lists x and y and plots lines connecting them on the order received
     def plot_lines(self, x, y, name, line_color, line_style = '-', line_width = 1):
@@ -23,6 +32,27 @@ class Graph:
     # Receives points coordinates in lists x and y and plots them on the order received
     def plot_points(self, x, y, name, marker_color, marker_style = 'o', marker_size = 10):
         self.__points = self.__ax.scatter(x, y, label=name, color=marker_color, marker=marker_style, s=marker_size)
+
+    def plot_annotation(self):
+        self.__fig.canvas.mpl_connect('motion_notify_event', self.motion_hover_annotation)
+
+    def motion_hover_annotation(self, event):
+        annotation_visibillity = self.__annotation.get_visible()    
+        if event.inaxes == self.__ax:
+            is_contained, annotation_index = self.__points.contains(event)
+            if is_contained:
+                data_point_location = self.__points.get_offsets()[annotation_index['ind'][0]]
+                self.__annotation.xy = data_point_location
+
+                text_label = f'{data_point_location[0]}, {data_point_location[1]}'
+                self.__annotation.set_text(text_label)
+                self.__annotation.set_visible(True)
+                self.__fig.canvas.draw_idle()
+                
+            else:
+                if annotation_visibillity:
+                    self.__annotation.set_visible(False)
+                    self.__fig.canvas.draw_idle()
     
     # Receives trajectory and semantic category and prints texts on graph
     def plot_text(self, trajectory, key, color):
