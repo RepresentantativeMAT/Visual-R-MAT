@@ -59,6 +59,13 @@ class Graph:
     # Save plot as png image
     def save_plot(self, filename):
         plt.savefig(filename, dpi=800, bbox_inches='tight')
+
+    # Gets Axes boundaries based on the cell_size and the higher and lower limiters
+    def get_ax_boundaries(self, lim: list, cell_size):
+        lower_bound = np.floor(min(lim)/cell_size)*cell_size
+        higher_bound = np.ceil(max(lim)/cell_size)*cell_size
+
+        return lower_bound, higher_bound
     
     # Configure settings for graph
     def settings(self, grid, grid_size : float, n_traj, xlabel = "Latitude", ylabel = "Longitude"):
@@ -66,11 +73,18 @@ class Graph:
         if grid:
             #print(self.__ax.xaxis_date())
             xlim = self.__ax.get_xlim()                         # x limits
-            x_ticks = np.arange(xlim[0], xlim[1], grid_size)    # Find grid intervals on x
+            #x_ticks = np.arange(xlim[0], xlim[1], grid_size)    # Find grid intervals on x
             #print('xlim: ', xlim, 'grid_size: ', grid_size)
             #print(np.arange(xlim[0], xlim[1], grid_size))
             ylim = self.__ax.get_ylim()                         # y limits
-            y_ticks = np.arange(ylim[0], ylim[1], grid_size)    # Find grid intervals on y
+            #y_ticks = np.arange(ylim[0], ylim[1], grid_size)    # Find grid intervals on y
+
+            lower_bound_x, higher_bound_x = self.get_ax_boundaries(xlim, grid_size)
+            lower_bound_y, higher_bound_y = self.get_ax_boundaries(ylim, grid_size)
+
+            x_ticks = np.arange(lower_bound_x, higher_bound_x + grid_size, grid_size)
+            y_ticks = np.arange(lower_bound_y, higher_bound_y + grid_size, grid_size)
+
             self.__ax.set_xticks(x_ticks)                       # Set grid intervals on x
             self.__ax.set_yticks(y_ticks)                       # Set grid intervals on y
         else:
